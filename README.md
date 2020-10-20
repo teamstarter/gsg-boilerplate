@@ -12,6 +12,18 @@ First you need to clone the project.
 $ git clone git@github.com:teamstarter/gsg-boilerplate.git
 ```
 
+This project uses the 12.18.1 version of Node. You can switch to the right version using nvm.
+
+```
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
+```
+
+Then choose the rigth version
+
+```
+$ nvm use
+```
+
 Then install all the dependencies of the project
 
 ```
