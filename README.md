@@ -1,68 +1,128 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# gsg-boilerplate
 
-## Available Scripts
+This project is a boilerplate to quickly get started with graphql-sequelize-generator.
+
+It's a simple To Do list app based on [this codepen](https://codepen.io/karlomajer/pen/rvyyvV) that allows you to manage tasks (create, update, delete, count).
+
+## Getting Started
+
+First you need to clone the project.
+
+```
+$ git clone git@github.com:teamstarter/gsg-boilerplate.git
+```
+
+Then install all the dependencies of the project
+
+```
+$ yarn
+```
+
+Then you need to initialize the database before starting the project. It is configured by default with an sqlite database as described in ./config/config.json. The following command will create or replace the ./data/database.sqlite and run the migrations and the seeds.
+
+You can use any [Sequelize](https://sequelize.org/master/manual/getting-started.html)-compatible database (Postgresql, MySQL, etc...)
+
+```
+$ yarn db-reset
+```
+
+Once the database is initialized, you can run the project
+
+```
+$ yarn dev
+```
+
+You can then test the app at this address: http://locahost:3000.
+
+## The Server
+
+It's a node server written in Typescript. It generates a GraphQL schema based on a few declarations of queries, mutations and subscriptions.
+
+```javascript
+graphqlSchemaDeclaration.task = {
+  model: models.task,
+  actions: ['list', 'create', 'update', 'delete', 'count'],
+  subscriptions: ['create', 'update', 'delete']
+}
+```
+
+GSG requires a task model (in the models folder), to work with the above configuration.
+
+```javascript
+export default function Task(sequelize) {
+  var Task = sequelize.define(
+    'task',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+      }
+    },
+    {
+      sequelize,
+      freezeTableName: true,
+      modelName: 'task',
+      paranoid: true,
+      timestamps: true
+    }
+  )
+
+  return Task
+}
+```
+
+The server generates an endpoint (/graphql) to execute get/post queries from the app.
+
+## The App
+
+This boilerplace uses React. It was initialized using create-react-app.
+
+The app uses apollo (the @apollo/client package) which allows you
+to quickly send queries to the server to get or send data. In the following example, the query gets a list of tasks.
+
+```javascript
+const GET_TASKS = gql`
+  query GetTasks($order: String, $where: SequelizeJSON) {
+    task(order: $order, where: $where) {
+      id
+      name
+      active
+    }
+  }
+```
+
+## Available Commands
 
 In the project directory, you can run:
 
-### `yarn start`
+### `yarn dev`
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser while reloading if you make edits.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+The `yarn dev` command runs the app and the server with pm2.
 
-### `yarn test`
+### `yarn db-reset`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Creates a sqlite database file in the data folder and runs the migrations and seeds. If the database file already exists the file is replaced by a new one. This command is useful to clean the database and get a default one.
 
-### `yarn build`
+### `./node_modules/.bin/pm2 log`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Use this command to print logs in the terminal. It's useful to have some realtime logs when you need to debug your app.
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You can learn more about graphql-sequelize-generator [here](https://github.com/teamstarter/graphql-sequelize-generator).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+To learn Graphql, check out the [GraphQL documentation](https://graphql.org/)
