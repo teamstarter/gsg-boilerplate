@@ -9,17 +9,13 @@ module.exports = {
       watch: true,
       ignore_watch: ['data', '.git/*', 'node_modules', 'src'],
       exec_mode: 'fork',
-      script: './server/server.ts',
+      script: './server/server.js',
       cwd: './',
       // Be careful, --inspect takes a lot of resources and is greatly reducing the dev experience when enabled.
       interpreter: 'node',
-      env: {
-        TS_NODE_PROJECT: './server/tsconfig.json',
-      },
-      interpreter_args:
-        '--inspect --require ts-node/register --require tsconfig-paths/register',
-      log_date_format: 'YYYY-MM-DD HH:mm Z',
-    },
+      interpreter_args: '--inspect',
+      log_date_format: 'YYYY-MM-DD HH:mm Z'
+    }
   ],
-  deploy: {},
+  deploy: {}
 }
