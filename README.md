@@ -137,7 +137,7 @@ This command will stop your app.
 
 ## Learn More
 
-You can learn more about graphql-sequelize-generator [here](https://github.com/teamstarter/graphql-sequelize-generator).
+You can learn more about graphql-sequelize-generator [here](https://teamstarter.github.io/gsg-documentation/).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
