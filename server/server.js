@@ -1,44 +1,54 @@
 const express = require('express')
+const { expressMiddleware } = require('@apollo/server/express4')
+const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const http = require('http')
-const {
-  generateModelTypes,
-  generateApolloServer,
-} = require('graphql-sequelize-generator')
-const { PubSub } = require('graphql-subscriptions')
+const cors = require('cors')
+const { json } = require('body-parser')
 
 const models = require('../models')
 
-const types = generateModelTypes(models)
+const setupServer = require('./schema')
 
-let graphqlSchemaDeclaration = {}
+const createServer = async (options = {}, globalPreCallback = () => null) => {
+  const app = express()
+  options = {
+    spdy: { plain: true },
+    ...options
+  }
+  const httpServer = http.createServer(options, app)
+  const { server } = setupServer(globalPreCallback, httpServer)
+  await server.start()
+  //server.applyMiddleware({ app, path: '/graphql' })
+  app.use(
+    '/graphql',
+    cors(),
+    json(),
+    expressMiddleware(server, {
+      context: async ({ req, connection }) => {
+        const contextDataloader = createContext(models.sequelize)
 
-graphqlSchemaDeclaration.task = {
-  model: models.task,
-  actions: ['list', 'create', 'update', 'delete', 'count'],
-  subscriptions: ['create', 'update', 'delete'],
+        // Connection is provided when a webSocket is connected.
+        if (connection) {
+          // check connection for metadata
+          return {
+            ...connection.context,
+            [EXPECTED_OPTIONS_KEY]: contextDataloader
+          }
+        }
+      }
+    })
+  )
+
+  await new Promise(resolve => {
+    httpServer.listen(process.env.PORT || 8080, () => {
+      resolve()
+    })
+
+    console.log(
+      `🚀 Server ready at http://localhost:${process.env.PORT || 8080}/graphql`
+    )
+  })
+  return httpServer
 }
 
-const pubSubInstance = new PubSub()
-
-const server = generateApolloServer({
-  graphqlSchemaDeclaration,
-  types,
-  models,
-  pubSubInstance,
-})
-
-const app = express()
-server.applyMiddleware({
-  app,
-  path: '/graphql',
-})
-
-const port = process.env.PORT || 8080
-
-const serverHttp = http.createServer({}, app).listen(port, async () => {
-  console.log(
-    `🚀 http/https/h2 server runs on  http://localhost:${port}/graphql .`
-  )
-})
-
-server.installSubscriptionHandlers(serverHttp)
+createServer()

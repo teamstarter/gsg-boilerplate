@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.2.4",
+    "@apollo/client": "^3.7.9",
+    "@apollo/server": "^4.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "dataloader-sequelize": "^2.3.3",
     "graphql": "^15.3.0",
-    "graphql-relay": "^0.6.0",
+    "graphql-relay": "^0.10.0",
     "graphql-sequelize": "^9.4.0",
-    "graphql-sequelize-generator": "^7.1.5",
+    "graphql-sequelize-generator": "^8.0.0",
+    "graphql-ws": "^5.11.3",
     "pm2": "^4.5.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
@@ -18,7 +21,9 @@
     "sequelize": "^6.3.5",
     "sequelize-cli": "^6.2.0",
     "sqlite3": "^5.0.0",
-    "use-debounce": "^5.0.1"
+    "subscriptions-transport-ws": "^0.11.0",
+    "use-debounce": "^5.0.1",
+    "ws": "^8.12.1"
   },
   "scripts": {
     "start": "react-scripts start",
